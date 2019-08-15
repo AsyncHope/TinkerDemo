@@ -1,0 +1,63 @@
+apply plugin: 'com.android.application'
+apply from: 'tinkerpatch.gradle'
+//apply plugin: 'walle' //多渠道打包配置
+
+android {
+    signingConfigs {
+        release {
+            keyAlias 'ds_tinker'
+            keyPassword '111aaa'
+            storeFile file('ds_tinker.jks')
+            storePassword '111aaa'
+        }
+    }
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.hope.demo"
+        minSdkVersion 19
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0.1"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            signingConfig signingConfigs.release
+
+            proguardFiles 'proguard-rules.pro', getDefaultProguardFile('proguard-android.txt')
+        }
+        debug {
+            debuggable true
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    // 若使用annotation需要单独引用,对于tinker的其他库都无需再引用
+    annotationProcessor("com.tinkerpatch.tinker:tinker-android-anno:1.9.13.3") { changing = true }
+    compileOnly('com.tinkerpatch.tinker:tinker-android-anno:1.9.13.3') { changing = true }
+    implementation('com.tinkerpatch.sdk:tinkerpatch-android-sdk:1.2.13.3') { changing = true }
+    implementation 'com.android.support:multidex:1.0.2'
+    implementation 'com.meituan.android.walle:library:1.1.3'
+}
+
+//walle {
+//    // 指定渠道包的输出路径
+//    apkOutputFolder = new File("${project.buildDir}/outputs/channels");
+//    // 定制渠道包的APK的文件名称 "gy_v${defaultConfig.versionName}_${variant.productFlavors[0].name}.apk"
+//    apkFileNameFormat = '${appName}_v${versionName}_${channel}.apk';
+//    // 渠道配置文件
+//    channelFile = new File("${project.getProjectDir()}/channel")
+//}
+
